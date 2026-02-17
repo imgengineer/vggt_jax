@@ -1,0 +1,12 @@
+.venv/
+.venv_torch/
+.upstream_vggt/
+.bonsai_ref/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+weights/
+*.egg-info/
+build/
+dist/

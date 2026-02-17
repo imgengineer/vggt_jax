@@ -1,0 +1,49 @@
+[project]
+name = "vggt-jax"
+version = "0.1.0"
+description = "VGGT implementation in JAX + Flax NNX"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "jax==0.9.0.1",
+  "jaxlib==0.9.0.1",
+  "flax==0.12.4",
+  "einops>=0.8.0",
+  "huggingface-hub>=0.30.0",
+  "numpy>=2.0,<3.0",
+  "Pillow>=10.0.0",
+  "safetensors>=0.5.0",
+]
+
+[project.optional-dependencies]
+cuda13 = [
+  "jax[cuda13]==0.9.0.1",
+]
+data = [
+  "grain==0.2.15",
+]
+dev = [
+  "pytest>=8.3.0",
+  "ruff>=0.11.0",
+]
+convert = [
+  "torch>=2.4.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["vggt_jax*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
