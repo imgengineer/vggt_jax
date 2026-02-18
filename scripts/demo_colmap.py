@@ -114,14 +114,21 @@ def main() -> None:
     if len(image_path_list) == 0:
         raise SystemExit(f"No images found in {image_dir}")
 
+    print(f"found images: {len(image_path_list)}", flush=True)
     base_image_names = [os.path.basename(path) for path in image_path_list]
 
+    print("loading VGGT model...", flush=True)
     model = _load_model(args)
+    print("model loaded.", flush=True)
 
+    print("preprocessing images...", flush=True)
     images_np, original_coords = load_and_preprocess_images_square_np(image_path_list, target_size=args.resolution)
     images = jnp.asarray(images_np)
+    print(f"preprocessed image batch: {images.shape}", flush=True)
 
+    print("running model forward...", flush=True)
     preds = model(images)
+    print("model forward done.", flush=True)
     pose_enc = np.asarray(preds["pose_enc"][0])
     depth_map = np.asarray(preds["depth"][0])
     depth_conf = np.asarray(preds["depth_conf"][0])
@@ -145,6 +152,7 @@ def main() -> None:
 
     image_size = np.asarray([width, height], dtype=np.int32)
 
+    print("converting predictions to COLMAP reconstruction...", flush=True)
     try:
         reconstruction = batch_np_matrix_to_pycolmap_wo_track(
             points_3d_flat,

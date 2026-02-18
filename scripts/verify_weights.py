@@ -38,7 +38,6 @@ def main() -> None:
             repo_id=args.repo_id,
             filename=args.filename,
             local_dir=args.cache_dir,
-            local_dir_use_symlinks=False,
         )
 
     _, report = create_vggt_from_checkpoint(

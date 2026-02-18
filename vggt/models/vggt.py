@@ -219,8 +219,13 @@ class VGGT(nnx.Module):
 
         def _load_from_hf_checkpoint() -> tuple["VGGT", ConversionReport]:
             nonlocal checkpoint_path
-            local_dir = Path(download_pretrained_weights(repo_id=repo_id, cache_dir=cache_dir))
-            checkpoint_path = local_dir / filename
+            checkpoint_path = Path(
+                download_pretrained_weights(
+                    repo_id=repo_id,
+                    filename=filename,
+                    cache_dir=cache_dir,
+                )
+            )
             if not checkpoint_path.exists():
                 raise FileNotFoundError(f"Missing checkpoint at {checkpoint_path}")
             return create_vggt_from_torch_checkpoint(
@@ -372,23 +377,22 @@ class ConversionReport:
 
 def download_pretrained_weights(
     repo_id: str = "facebook/VGGT-1B",
+    filename: str = "model.safetensors",
     cache_dir: str = "./weights",
-    allow_patterns: tuple[str, ...] = ("*.safetensors", "*.npz", "*.json", "*.pt", "*.bin"),
 ) -> str:
     try:
-        from huggingface_hub import snapshot_download
+        from huggingface_hub import hf_hub_download
     except ImportError as exc:  # pragma: no cover
         raise ImportError(
             "Missing dependency `huggingface-hub`. Install it to download pretrained weights."
         ) from exc
 
-    local_dir = snapshot_download(
+    checkpoint_path = hf_hub_download(
         repo_id=repo_id,
+        filename=filename,
         local_dir=cache_dir,
-        local_dir_use_symlinks=False,
-        allow_patterns=list(allow_patterns),
     )
-    return local_dir
+    return checkpoint_path
 
 
 def create_vggt_model(config: ModelConfig | None = None, *, rngs: nnx.Rngs | None = None) -> VGGT:
@@ -408,8 +412,14 @@ def create_vggt_from_pretrained(repo_id: str = "facebook/VGGT-1B", cache_dir: st
         prefer_hf_weights=True,
         save_orbax_cache=False,
     )
-    local_dir = Path(download_pretrained_weights(repo_id=repo_id, cache_dir=cache_dir))
-    return model, local_dir
+    checkpoint_path = Path(
+        download_pretrained_weights(
+            repo_id=repo_id,
+            filename="model.safetensors",
+            cache_dir=cache_dir,
+        )
+    )
+    return model, checkpoint_path.parent
 
 
 def _flatten_tree(tree: dict[str, Any], prefix: tuple[Any, ...] = ()) -> dict[tuple[Any, ...], Any]:
