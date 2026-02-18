@@ -1,14 +1,16 @@
 import numpy as np
 from flax import nnx
 
-from vggt_jax.models.vggt.modeling import (
+from vggt.models.vggt import (
     LINEAR_WEIGHT,
     NONE,
     ModelConfig,
     VGGT,
     create_vggt_from_nnx_npz,
+    create_vggt_from_orbax_checkpoint,
     map_torch_key_to_nnx,
     save_nnx_weights_npz,
+    save_nnx_weights_orbax,
 )
 
 
@@ -54,6 +56,22 @@ def test_reload_nnx_weights_npz_roundtrip(tmp_path):
     save_nnx_weights_npz(model, str(output))
 
     reloaded = create_vggt_from_nnx_npz(str(output), cfg, rngs=nnx.Rngs(1), strict=True)
+
+    _, state_a = nnx.split(model)
+    _, state_b = nnx.split(reloaded)
+    dict_a = nnx.to_pure_dict(state_a)
+    dict_b = nnx.to_pure_dict(state_b)
+
+    assert np.allclose(np.asarray(dict_a["aggregator"]["camera_token"]), np.asarray(dict_b["aggregator"]["camera_token"]))
+
+
+def test_reload_nnx_weights_orbax_roundtrip(tmp_path):
+    cfg = ModelConfig.vggt_tiny()
+    model = VGGT(cfg, rngs=nnx.Rngs(0))
+    output = tmp_path / "orbax_ckpt"
+    save_nnx_weights_orbax(model, str(output), force=True)
+
+    reloaded = create_vggt_from_orbax_checkpoint(str(output), cfg, rngs=nnx.Rngs(1), strict=True)
 
     _, state_a = nnx.split(model)
     _, state_b = nnx.split(reloaded)

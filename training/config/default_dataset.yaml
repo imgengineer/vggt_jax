@@ -1,0 +1,72 @@
+data:
+  train:
+    _target_: training.data.dynamic_dataloader.DynamicJaxDataset
+    num_workers: 8
+    max_img_per_gpu: 48
+    shuffle: true
+    pin_memory: false
+    common_config:
+      fix_img_num: -1
+      fix_aspect_ratio: 1.0
+      load_track: false
+      track_num: 1024
+      training: true
+      inside_random: true
+      img_size: 224
+      patch_size: 14
+      rescale: true
+      rescale_aug: true
+      landscape_check: false
+      debug: false
+      get_nearby: true
+      load_depth: true
+      img_nums: [2, 24]
+      max_img_per_gpu: 48
+      allow_duplicate_img: true
+      repeat_batch: false
+      augs:
+        cojitter: true
+        cojitter_ratio: 0.3
+        scales: [0.8, 1.2]
+        aspects: [0.33, 1.0]
+        color_jitter:
+          brightness: 0.5
+          contrast: 0.5
+          saturation: 0.5
+          hue: 0.1
+          p: 0.9
+        gray_scale: true
+        gau_blur: false
+
+  val:
+    _target_: training.data.dynamic_dataloader.DynamicJaxDataset
+    num_workers: 8
+    max_img_per_gpu: 48
+    shuffle: true
+    pin_memory: false
+    common_config:
+      fix_img_num: -1
+      fix_aspect_ratio: 1.0
+      load_track: false
+      track_num: 1024
+      training: false
+      inside_random: true
+      img_size: 224
+      patch_size: 14
+      rescale: true
+      rescale_aug: false
+      landscape_check: false
+      debug: false
+      get_nearby: true
+      load_depth: true
+      img_nums: [2, 12]
+      allow_duplicate_img: true
+      repeat_batch: false
+      augs:
+        cojitter: false
+        cojitter_ratio: 0.5
+        scales: null
+        aspects: [1.0, 1.0]
+        color_jitter: null
+        gray_scale: false
+        gau_blur: false

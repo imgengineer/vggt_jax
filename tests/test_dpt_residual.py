@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 
-from vggt_jax.heads.dpt_head import _residual_conv_unit
-from vggt_jax.holders import ResidualConvUnitHolder
+from vggt.heads.dpt_head import _residual_conv_unit
+from vggt.holders import ResidualConvUnitHolder
 
 
 def test_residual_conv_unit_uses_relu_residual_path():

@@ -1,6 +1,6 @@
 import jax.numpy as jnp
 
-from vggt_jax.heads.track_ops import _sample_nchw
+from vggt.heads.track_ops import _sample_nchw
 
 
 def test_sample_nchw_1x1_matches_grid_sample_semantics():

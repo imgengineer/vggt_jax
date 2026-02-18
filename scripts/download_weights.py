@@ -1,28 +1,20 @@
 import argparse
-import os
 
 from huggingface_hub import hf_hub_download
 
-
-def set_proxy(proxy_port: int | None) -> None:
-    if proxy_port is None:
-        return
-    http_proxy = f"http://127.0.0.1:{proxy_port}"
-    socks_proxy = f"http://127.0.0.1:{proxy_port}"
-    os.environ["HTTP_PROXY"] = http_proxy
-    os.environ["HTTPS_PROXY"] = http_proxy
-    os.environ["ALL_PROXY"] = socks_proxy
+try:
+    from scripts._common import DEFAULT_CACHE_DIR, DEFAULT_FILENAME, DEFAULT_REPO_ID
+except ModuleNotFoundError:  # pragma: no cover
+    from _common import DEFAULT_CACHE_DIR, DEFAULT_FILENAME, DEFAULT_REPO_ID
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--repo-id", type=str, default="facebook/VGGT-1B")
-    parser.add_argument("--filename", type=str, default="model.pt")
-    parser.add_argument("--cache-dir", type=str, default="./weights")
-    parser.add_argument("--proxy-port", type=int, default=None)
+    parser = argparse.ArgumentParser(description="Download VGGT public weights from Hugging Face.")
+    parser.add_argument("--repo-id", type=str, default=DEFAULT_REPO_ID, help="Hugging Face repo id.")
+    parser.add_argument("--filename", type=str, default=DEFAULT_FILENAME, help="Weight filename in repo.")
+    parser.add_argument("--cache-dir", type=str, default=DEFAULT_CACHE_DIR, help="Download destination directory.")
     args = parser.parse_args()
 
-    set_proxy(args.proxy_port)
     path = hf_hub_download(
         repo_id=args.repo_id,
         filename=args.filename,

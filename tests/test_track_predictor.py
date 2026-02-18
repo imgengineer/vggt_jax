@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from flax import nnx
 
-from vggt_jax.heads.track_head import TrackHead, TrackHeadConfig
+from vggt.heads.track_head import TrackHead, TrackHeadConfig
 
 
 def test_track_head_tracker_forward_shapes_and_ref_frame_lock():
@@ -22,7 +22,7 @@ def test_track_head_tracker_forward_shapes_and_ref_frame_lock():
     )
     model = TrackHead(cfg, rngs=nnx.Rngs(0))
 
-    images = jax.random.uniform(jax.random.key(0), (1, 2, 3, 32, 32), dtype=jnp.float32)
+    images = jax.random.uniform(jax.random.key(0), (1, 2, 32, 32, 3), dtype=jnp.float32)
     patch_count = (32 // cfg.patch_size) * (32 // cfg.patch_size)
     tokens = jax.random.uniform(jax.random.key(1), (1, 2, 1 + patch_count, cfg.dim_in), dtype=jnp.float32)
 

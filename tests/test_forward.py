@@ -2,17 +2,18 @@ import jax
 import jax.numpy as jnp
 from flax import nnx
 
-from vggt_jax.models import ModelConfig, VGGT
+from vggt.models import ModelConfig, VGGT
 
 
 def test_vggt_tiny_forward_shapes():
     cfg = ModelConfig.vggt_tiny()
     model = VGGT(cfg, rngs=nnx.Rngs(0))
+    model.eval()
 
-    images = jax.random.uniform(jax.random.key(42), (1, 3, 3, 56, 56), dtype=jnp.float32)
+    images = jax.random.uniform(jax.random.key(42), (1, 3, 56, 56, 3), dtype=jnp.float32)
     query_points = jnp.array([[[8.0, 8.0], [10.0, 12.0]]], dtype=jnp.float32)
 
-    preds = model(images, query_points=query_points, deterministic=True)
+    preds = model(images, query_points=query_points)
 
     assert preds["pose_enc"].shape == (1, 3, 9)
     assert preds["depth"].shape == (1, 3, 56, 56, 1)
